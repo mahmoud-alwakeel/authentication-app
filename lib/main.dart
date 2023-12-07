@@ -1,3 +1,5 @@
+import 'package:authentication/screens/login_screen.dart';
+import 'package:authentication/screens/signUp_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +18,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Scaffold(),
+      home: const LoginScreen(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const SignUpScreen(),
+      },
     );
   }
 }
