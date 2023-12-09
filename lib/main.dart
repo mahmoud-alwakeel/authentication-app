@@ -1,3 +1,4 @@
+import 'package:authentication/screens/home_screen.dart';
 import 'package:authentication/screens/login_screen.dart';
 import 'package:authentication/screens/signUp_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,10 +32,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home: FirebaseAuth.instance.currentUser == null ? const  LoginScreen() : const HomeScreen(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const SignUpScreen(),
+        '/home': (context) => const HomeScreen(),
       },
     );
   }
