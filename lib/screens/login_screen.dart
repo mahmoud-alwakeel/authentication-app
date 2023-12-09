@@ -1,3 +1,5 @@
+import 'package:authentication/component/custom_logo.dart';
+import 'package:authentication/component/text_form_field.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -8,6 +10,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordCOntroller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,30 +29,15 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.all(16),
           child: ListView(
             children: [
-              Container(
-                alignment: Alignment.center,
-                width: 70,
-                height: 70,
-                child: Image.network('https://picsum.photos/100/100'),
-              ),
+              const CustomLogo(),
               const SizedBox(height: 40,),
               const Text('Login', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
               const Text('Login to continue using the app', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),),
               const Text('Email', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),),
-              TextFormField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-                  labelText: 'email',
-                ),
-              ),
+              CustomTextFormField(hintText: 'enter your email', myController: emailController),
               const SizedBox(height: 30,),
               const Text('Password', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),),
-              TextFormField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-                  labelText: 'password',
-                ),
-              ),
+              CustomTextFormField(hintText: 'enter your password', myController: passwordCOntroller),
               const SizedBox(height: 40,),
               MaterialButton(
                 onPressed: (){}, 
@@ -68,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onTap: (){
                           Navigator.pushReplacementNamed(context, '/register');
                         },
-                        child: const Text('Register', style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.w700),))
+                        child: const Text('Sign up', style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.w700),))
                     ],
                   )
             ],
