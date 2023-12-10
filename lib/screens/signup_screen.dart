@@ -4,6 +4,7 @@ import 'package:authentication/component/text_form_field.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -58,11 +59,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 height: 10,
               ),
               CustomTextFormField(
-                validator: (value) {
-                  if (value == "") {
-                    return "username can't be empty";
-                  }
-                },
+                  validator: (value) {
+                    if (value == "") {
+                      return "username can't be empty";
+                    }
+                  },
                   hintText: 'enter your username',
                   myController: usernameController),
               const Text(
@@ -73,12 +74,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 height: 10,
               ),
               CustomTextFormField(
-                validator: (value) {
-                  if (value == "") {
-                    return "email can't be empty";
-                  }
-                },
-                  hintText: 'enter your email', myController: emailController),
+                  validator: (value) {
+                    if (value == "") {
+                      return "email can't be empty";
+                    }
+                  },
+                  hintText: 'enter your email',
+                  myController: emailController),
               const SizedBox(
                 height: 10,
               ),
@@ -90,8 +92,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 height: 10,
               ),
               CustomTextFormField(
-                validator: (value){
-                    if(value!.length < 8) {
+                  validator: (value) {
+                    if (value!.length < 8) {
                       return "password can't be less than 8 characters";
                     }
                   },
@@ -104,28 +106,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   onPressed: () async {
                     if (formState.currentState!.validate()) {
                       try {
-                      final credential = await FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                        email: emailController.text,
-                        password: passwordCOntroller.text,
-                      );
-                      Navigator.pushReplacementNamed(context, '/home');
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'weak-password') {
-                        print('The password provided is too weak.');
-                      } else if (e.code == 'email-already-in-use') {
-                        print('The account already exists for that email');
-                        AwesomeDialog(
-                          context: context,
-                          dialogType: DialogType.warning,
-                          animType: AnimType.rightSlide,
-                          title: 'Warning',
-                          desc: 'The account already exists for that email',
-                        ).show();
+                        final credential = await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passwordCOntroller.text,
+                        );
+                        FirebaseAuth.instance.currentUser!.sendEmailVerification();
+                        print('before toast');
+
+                        Fluttertoast.showToast(
+                            msg: "verfication link is sent to your email",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 3,
+                            backgroundColor: Colors.deepPurple,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
+                            print('after toast');
+                        Navigator.pushReplacementNamed(context,'/login');
+                        
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'weak-password') {
+                          print('The password provided is too weak.');
+                        } else if (e.code == 'email-already-in-use') {
+                          print('The account already exists for that email');
+                          AwesomeDialog(
+                            context: context,
+                            dialogType: DialogType.warning,
+                            animType: AnimType.rightSlide,
+                            title: 'Warning',
+                            desc: 'The account already exists for that email',
+                          ).show();
+                        }
+                      } catch (e) {
+                        print(e);
                       }
-                    } catch (e) {
-                      print(e);
-                    }
                     }
                   },
                   buttonTitle: 'Sign up'),

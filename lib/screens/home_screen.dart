@@ -8,7 +8,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('home screen'),
+        title: const Text('home screen'),
         actions: [
           IconButton(onPressed: () async {
             await FirebaseAuth.instance.signOut();
