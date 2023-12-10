@@ -80,9 +80,53 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   hintText: 'enter your password',
                   myController: passwordCOntroller),
-              const SizedBox(
-                height: 40,
+                  const SizedBox(height: 10,),
+              GestureDetector(
+                onTap: () async {
+                  if (emailController.text == "") {
+                    Fluttertoast.showToast(
+                      msg: "enter your email address first",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 3,
+                      backgroundColor: Colors.deepPurple,
+                      textColor: Colors.white,
+                      fontSize: 16.0);
+                    return ;
+                  }
+                  try {
+                    await FirebaseAuth.instance
+                      .sendPasswordResetEmail(email: emailController.text);
+                      Fluttertoast.showToast(
+                      msg: "password reset has been sent to your email",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 3,
+                      backgroundColor: Colors.deepPurple,
+                      textColor: Colors.white,
+                      fontSize: 16.0);
+                  } catch(e){
+                    print(e);
+                    Fluttertoast.showToast(
+                      msg: "email addres entered is incorrect",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 3,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                      fontSize: 16.0);
+                  }
+                },
+                child: const Text(
+                  'Forgot password ?',
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.deepPurple,
+                      fontWeight: FontWeight.w700),
+                ),
               ),
+              const SizedBox(height: 20,),
               CustomButton(
                   onPressed: () async {
                     if (formState.currentState!.validate()) {
@@ -95,34 +139,35 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.of(context).pushReplacementNamed('/home');
                         } else {
                           Fluttertoast.showToast(
-                            msg: "please verify your email",
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 3,
-                            backgroundColor: Colors.deepPurple,
-                            textColor: Colors.white,
-                            fontSize: 16.0);
-                            print('after toast');
+                              msg: "please verify your email",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 3,
+                              backgroundColor: Colors.deepPurple,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                          print('after toast');
                         }
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'user-not-found') {
                           print('user not found');
-                          AwesomeDialog(
-                            context: context,
-                            dialogType: DialogType.warning,
-                            animType: AnimType.rightSlide,
-                            title: 'Warning',
-                            desc: 'The account already exists for that email',
-                          )..show();
+                          Fluttertoast.showToast(
+                              msg: "user not found",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 3,
+                              backgroundColor: Colors.deepPurple,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
                         } else if (e.code == 'wrong-password') {
-                          print('wrong password');
-                          AwesomeDialog(
-                            context: context,
-                            dialogType: DialogType.error,
-                            animType: AnimType.rightSlide,
-                            title: 'Error',
-                            desc: 'Wrong password provided for that user',
-                          )..show();
+                          Fluttertoast.showToast(
+                              msg: "password entered is wrong",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 3,
+                              backgroundColor: Colors.deepPurple,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
                         }
                       }
                     } else {}
