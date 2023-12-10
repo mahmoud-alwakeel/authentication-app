@@ -4,7 +4,9 @@ import 'package:authentication/component/text_form_field.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -80,41 +82,43 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   hintText: 'enter your password',
                   myController: passwordCOntroller),
-                  const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               GestureDetector(
                 onTap: () async {
                   if (emailController.text == "") {
                     Fluttertoast.showToast(
-                      msg: "enter your email address first",
-                      toastLength: Toast.LENGTH_LONG,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 3,
-                      backgroundColor: Colors.deepPurple,
-                      textColor: Colors.white,
-                      fontSize: 16.0);
-                    return ;
+                        msg: "enter your email address first",
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 3,
+                        backgroundColor: Colors.deepPurple,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                    return;
                   }
                   try {
                     await FirebaseAuth.instance
-                      .sendPasswordResetEmail(email: emailController.text);
-                      Fluttertoast.showToast(
-                      msg: "password reset has been sent to your email",
-                      toastLength: Toast.LENGTH_LONG,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 3,
-                      backgroundColor: Colors.deepPurple,
-                      textColor: Colors.white,
-                      fontSize: 16.0);
-                  } catch(e){
+                        .sendPasswordResetEmail(email: emailController.text);
+                    Fluttertoast.showToast(
+                        msg: "password reset has been sent to your email",
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 3,
+                        backgroundColor: Colors.deepPurple,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  } catch (e) {
                     print(e);
                     Fluttertoast.showToast(
-                      msg: "email addres entered is incorrect",
-                      toastLength: Toast.LENGTH_LONG,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 3,
-                      backgroundColor: Colors.red,
-                      textColor: Colors.white,
-                      fontSize: 16.0);
+                        msg: "email addres entered is incorrect",
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 3,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
                   }
                 },
                 child: const Text(
@@ -126,7 +130,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontWeight: FontWeight.w700),
                 ),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               CustomButton(
                   onPressed: () async {
                     if (formState.currentState!.validate()) {
@@ -184,7 +190,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 20,
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  signInWithGoogle();
+                },
                 child: Image.asset(
                   'assets/images/4.png',
                   height: 50,
@@ -215,5 +223,29 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    if (googleUser == null) {
+      return;
+    }
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    await FirebaseAuth.instance.signInWithCredential(credential);
+    Navigator.of(context)
+        .restorablePushNamedAndRemoveUntil('/home', (route) => false);
   }
 }
