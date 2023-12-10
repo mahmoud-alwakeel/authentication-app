@@ -1,5 +1,6 @@
 import 'package:authentication/component/custom_button.dart';
 import 'package:authentication/component/custom_logo.dart';
+import 'package:authentication/component/custom_toast.dart';
 import 'package:authentication/component/text_form_field.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,6 +20,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController passwordCOntroller = TextEditingController();
 
   GlobalKey<FormState> formState = GlobalKey();
+
+  bool isObsecured = true;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +68,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     }
                   },
                   hintText: 'enter your username',
+                  keyboardType: TextInputType.name,
                   myController: usernameController),
               const Text(
                 'Email',
@@ -80,6 +84,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     }
                   },
                   hintText: 'enter your email',
+                  keyboardType: TextInputType.emailAddress,
                   myController: emailController),
               const SizedBox(
                 height: 10,
@@ -98,6 +103,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     }
                   },
                   hintText: 'enter your password',
+                  obsecureText: isObsecured,
+                  suffixIcon: IconButton(onPressed: () {
+                    setState(() {
+                      isObsecured = !isObsecured;
+                    });
+                  }, icon: Icon(isObsecured ? Icons.remove_red_eye_outlined : Icons.remove_red_eye)),
+                  keyboardType: TextInputType.visiblePassword,
                   myController: passwordCOntroller),
               const SizedBox(
                 height: 40,
@@ -112,17 +124,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           password: passwordCOntroller.text,
                         );
                         FirebaseAuth.instance.currentUser!.sendEmailVerification();
-                        print('before toast');
-
-                        Fluttertoast.showToast(
-                            msg: "verfication link is sent to your email",
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 3,
-                            backgroundColor: Colors.deepPurple,
-                            textColor: Colors.white,
-                            fontSize: 16.0);
-                            print('after toast');
+                        customShowToast(message: "verfication link is sent to your email");
                         Navigator.pushReplacementNamed(context,'/login');
                         
                       } on FirebaseAuthException catch (e) {

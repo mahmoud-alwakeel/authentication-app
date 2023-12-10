@@ -1,11 +1,9 @@
 import 'package:authentication/component/custom_button.dart';
 import 'package:authentication/component/custom_logo.dart';
+import 'package:authentication/component/custom_toast.dart';
 import 'package:authentication/component/text_form_field.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,6 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordCOntroller = TextEditingController();
 
   GlobalKey<FormState> formState = GlobalKey<FormState>();
+
+  bool isObsecured = true;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   },
                   hintText: 'enter your email',
+                  keyboardType: TextInputType.emailAddress,
                   myController: emailController),
               const SizedBox(
                 height: 30,
@@ -81,6 +82,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   },
                   hintText: 'enter your password',
+                  keyboardType: TextInputType.visiblePassword,
+                  obsecureText: isObsecured,
+                  suffixIcon: IconButton(onPressed: (){
+                    setState(() {
+                      isObsecured = !isObsecured;
+                      
+                    });
+                  }, icon: Icon(isObsecured ? Icons.remove_red_eye_outlined : Icons.remove_red_eye)),
                   myController: passwordCOntroller),
               const SizedBox(
                 height: 10,
@@ -88,37 +97,18 @@ class _LoginScreenState extends State<LoginScreen> {
               GestureDetector(
                 onTap: () async {
                   if (emailController.text == "") {
-                    Fluttertoast.showToast(
-                        msg: "enter your email address first",
-                        toastLength: Toast.LENGTH_LONG,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 3,
-                        backgroundColor: Colors.deepPurple,
-                        textColor: Colors.white,
-                        fontSize: 16.0);
+                    customShowToast(message: "enter your email address first", backgroundColor: Colors.red);
                     return;
                   }
                   try {
                     await FirebaseAuth.instance
                         .sendPasswordResetEmail(email: emailController.text);
-                    Fluttertoast.showToast(
-                        msg: "password reset has been sent to your email",
-                        toastLength: Toast.LENGTH_LONG,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 3,
-                        backgroundColor: Colors.deepPurple,
-                        textColor: Colors.white,
-                        fontSize: 16.0);
+                    customShowToast(message: "password reset has been sent to your email");
                   } catch (e) {
                     print(e);
-                    Fluttertoast.showToast(
-                        msg: "email addres entered is incorrect",
-                        toastLength: Toast.LENGTH_LONG,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 3,
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                        fontSize: 16.0);
+                    customShowToast(
+                      message: "email addres entered is incorrect", 
+                    backgroundColor: Colors.red);
                   }
                 },
                 child: const Text(
@@ -144,36 +134,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (credential.user!.emailVerified) {
                           Navigator.of(context).pushReplacementNamed('/home');
                         } else {
-                          Fluttertoast.showToast(
-                              msg: "please verify your email",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 3,
-                              backgroundColor: Colors.deepPurple,
-                              textColor: Colors.white,
-                              fontSize: 16.0);
+                          customShowToast(message: "please verify your email");
                           print('after toast');
                         }
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'user-not-found') {
                           print('user not found');
-                          Fluttertoast.showToast(
-                              msg: "user not found",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 3,
-                              backgroundColor: Colors.deepPurple,
-                              textColor: Colors.white,
-                              fontSize: 16.0);
+                          customShowToast(message: "user not found");
                         } else if (e.code == 'wrong-password') {
-                          Fluttertoast.showToast(
-                              msg: "password entered is wrong",
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 3,
-                              backgroundColor: Colors.deepPurple,
-                              textColor: Colors.white,
-                              fontSize: 16.0);
+                          customShowToast(message: "password entered is wrong");
                         }
                       }
                     } else {}
